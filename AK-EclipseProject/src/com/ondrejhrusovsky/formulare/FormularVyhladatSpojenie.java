@@ -1,3 +1,4 @@
+package com.ondrejhrusovsky.formulare;
 import java.io.IOException;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -21,33 +22,19 @@ public class FormularVyhladatSpojenie extends Formular
 	}
 	
 	@Override
-	public void nacitajElementy()
+	public void nacitajElementy() throws ElementNotFoundException
 	{
 		try
 		{
 			odkialTextovePole = formular.getInputByName(formular.getNameAttribute() + ":fromInput");
-		}
-		catch(ElementNotFoundException e)
-		{
-			
-		}
-		try
-		{
 			kamTextovePole = formular.getInputByName(formular.getNameAttribute() + ":toInput");
+			cezTextovePole = formular.getInputByName(formular.getNameAttribute() + ":viaInput");		
 		}
-		catch(ElementNotFoundException e)
+		catch (ElementNotFoundException e)
 		{
-			
+			// Je to v poriadku, pri pokuse stranky o autocorrect (ziadost o vyber z dropdown) tieto textove polia neexistuju
 		}
-		try
-		{
-			cezTextovePole = formular.getInputByName(formular.getNameAttribute() + ":viaInput");
-		}
-		catch(ElementNotFoundException e)
-		{
-			
-		}
-			
+		
 		datumTextovePole = formular.getInputByName(formular.getNameAttribute() + ":date");
 		casTextovePole = formular.getInputByName(formular.getNameAttribute() + ":time");
 		vyhladatSpojenieTlacidlo = formular.getInputByName(formular.getNameAttribute() + ":submit");
@@ -61,26 +48,26 @@ public class FormularVyhladatSpojenie extends Formular
 	
 	public void nastavOdkial(String odkial)
 	{
-		this.odkialTextovePole.setValueAttribute(odkial);
+		odkialTextovePole.setValueAttribute(odkial);
 	}
 
 	public void nastavKam(String kam)
 	{
-		this.kamTextovePole.setValueAttribute(kam);
+		kamTextovePole.setValueAttribute(kam);
 	}
 
 	public void nastavCez(String cez)
 	{
-		this.cezTextovePole.setValueAttribute(cez);
+		cezTextovePole.setValueAttribute(cez);
 	}
 
 	public void nastavDatum(String datum)
 	{
-		this.datumTextovePole.setValueAttribute("Piatok, " + datum); // Netreba urcit spravny den, pretoze ikvc nekontroluje den
+		datumTextovePole.setValueAttribute("Piatok, " + datum); // Netreba urcit spravny den v tyzdni, pretoze ikvc nekontroluje den
 	}
 
 	public void nastavCas(String cas)
 	{
-		this.casTextovePole.setValueAttribute(cas);
+		casTextovePole.setValueAttribute(cas);
 	}
 }
