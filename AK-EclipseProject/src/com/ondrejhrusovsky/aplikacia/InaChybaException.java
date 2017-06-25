@@ -1,9 +1,9 @@
 package com.ondrejhrusovsky.aplikacia;
 
-public class NemoznoZakupitListokException extends Exception {
+public class InaChybaException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public NemoznoZakupitListokException(String msg)
+	public InaChybaException(String msg)
 	{
 		super(msg);
 	}

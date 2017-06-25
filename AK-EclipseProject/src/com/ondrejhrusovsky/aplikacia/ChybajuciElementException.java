@@ -1,9 +1,9 @@
 package com.ondrejhrusovsky.aplikacia;
 
-public class NemoznoZakupitListokException extends Exception {
+public class ChybajuciElementException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	public NemoznoZakupitListokException(String msg)
+	public ChybajuciElementException(String msg)
 	{
 		super(msg);
 	}

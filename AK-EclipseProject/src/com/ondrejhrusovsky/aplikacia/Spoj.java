@@ -9,10 +9,13 @@ import java.util.List;
 
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlOption;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.ondrejhrusovsky.formulare.FormularInformaciaOTrase;
 import com.ondrejhrusovsky.formulare.FormularNakup;
+import com.ondrejhrusovsky.aplikacia.WebData;
 
 public class Spoj
 {
@@ -22,45 +25,76 @@ public class Spoj
 	private int trvanieHod; // dlzka cestovania (pocet hodin)
 	private int trvanieMin; // dlzka cestovania (pocet minut - bez hodin)
 	
-	private FormularInformaciaOTrase formularInformaciaOTrase;
-	private FormularNakup formularNakup; // Moze byt null, ak chyba tlacidlo Nakup a teda listky sa  na tento spoj nedaju zakupit
-	
 	private ArrayList<Usek> volneUseky; // Naplnene po volani funkcie nacitajUsekySVolnymKontingentom()
+	private ArrayList<Usek> chybneUseky;
 	
-	public Spoj(Vyhladavanie vyhladavanie, DomElement elementSpoja, int idSpoja) throws IOException
+	private HtmlPage strankaSpoje;
+	private int idSpoja;
+	
+	public Spoj(Vyhladavanie vyhladavanie, DomElement elementSpoja, int idSpoja) throws IOException, InaChybaException, ChybajuciElementException, ZlyFormatElementuException
 	{
 		this.vyhladavanie = vyhladavanie;
-		
+		this.idSpoja = idSpoja;
+			
 		// Nacitaj formular informacie o trase
-		HtmlPage strankaSpoje = elementSpoja.getHtmlPageOrNull();
-		formularInformaciaOTrase = new FormularInformaciaOTrase(strankaSpoje.getFormByName("j_idt89:" + idSpoja + ":j_idt131"));
+		strankaSpoje = elementSpoja.getHtmlPageOrNull();
+		
+		if(strankaSpoje == null)
+		{
+			throw new InaChybaException("Spoju sa nepodarilo ziskat stranku spoje");
+		}
+		
+		String nazovFormInfo = WebData.NAME_SPOJE_FORM_INFO_PREFIX + idSpoja + WebData.NAME_SPOJE_FORM_INFO_SUFFIX;
+		
+		FormularInformaciaOTrase formularInformaciaOTrase = null;
 		
 		try
 		{
-			formularNakup = new FormularNakup(strankaSpoje.getFormByName("j_idt89:" + idSpoja + ":j_idt144"));
+			formularInformaciaOTrase = new FormularInformaciaOTrase(strankaSpoje.getFormByName(nazovFormInfo));
+			
 		}
-		catch(ElementNotFoundException e)
+		catch (ElementNotFoundException e)
 		{
-			formularNakup = null;
-			// Na tento spoj sa neda zakupit cestovny listok (chyba tlacidlo Nakup)
-		}	
+			throw new ChybajuciElementException("Element form info o trase (" + nazovFormInfo + ") sa nenasiel");
+		}
 		
 		HtmlPage strankaInformacieOTrase = formularInformaciaOTrase.posli();
 		
 		// Nacitaj vlaky
-		List<Object> h2Elementy = elementSpoja.getByXPath("h2");
+		List<Object> h2Elementy = elementSpoja.getByXPath(WebData.XPATH_SPOJE_NAZVYVLAKOV);
 		vlaky = new ArrayList<Vlak>();
-
-		for(Object e : h2Elementy)
+		
+		if(h2Elementy.size() > 0)
 		{
-			int idxNovehoVlaku = vlaky.size();
-			
-			DomElement elementInfo = (DomElement) strankaInformacieOTrase.getByXPath("//div[@class='block']").get(idxNovehoVlaku);
-			vlaky.add(new Vlak(this, elementSpoja, elementInfo, idxNovehoVlaku));
+			for(Object e : h2Elementy)
+			{
+				int idxNovehoVlaku = vlaky.size();
+				
+				List<Object> elementInfo = strankaInformacieOTrase.getByXPath(WebData.XPATH_INFO_BLOKZOZNAMZASTAVOK);
+				
+				if(elementInfo.size() > idxNovehoVlaku)
+				{
+					vlaky.add(new Vlak(this, elementSpoja, (DomElement) elementInfo.get(idxNovehoVlaku), idxNovehoVlaku));
+				}
+				else
+				{
+					throw new ChybajuciElementException("Nenasiel sa zoznam zastavok (" + WebData.XPATH_INFO_BLOKZOZNAMZASTAVOK + ") pre vlak s indexom " + idxNovehoVlaku);
+				}
+			}
+		}
+		else
+		{
+			throw new ChybajuciElementException("Nenasli sa h2 (" + WebData.XPATH_SPOJE_NAZVYVLAKOV + ") elementy (vlaky)");
+		}
+
+		// Nacitaj trvanie
+		DomElement trvanieElem = (DomElement) elementSpoja.getFirstByXPath(WebData.XPATH_SPOJE_TRVANIE);			
+		
+		if(trvanieElem == null)
+		{
+			throw new ChybajuciElementException("Element trvanie (" + WebData.XPATH_SPOJE_TRVANIE + ") sa nenasiel");
 		}
 		
-		// Nacitaj trvanie
-		DomElement trvanieElem = (DomElement) elementSpoja.getFirstByXPath("div[@class='info']/p/strong");			
 		String[] minHod = trvanieElem.asText().replace("min", "").split("hod");
 
 		if(trvanieElem.asText().contains("hod"))
@@ -87,13 +121,24 @@ public class Spoj
 		{
 			trvanieMin = 0;
 		}
+		
+		if((trvanieHod == 0 && trvanieMin == 0) || minHod.length == 0)
+		{
+			throw new ZlyFormatElementuException("Trvanie je 0 min a 0 hod alebo minHod ma dlzku 0");
+		}
 	}
 	
-	public void spustiHladanieVolnehoKontingentu()
+	public void spustiHladanieVolnehoKontingentu() throws ZlyFormatElementuException, InaChybaException
 	{		
 		ArrayList<Zastavka> vsetkyZastavky = ziskajVsetkyZastavky();
 		ArrayList<KontingentThread> kontingentThready = new ArrayList<KontingentThread>();
 		volneUseky = new ArrayList<Usek>();
+		chybneUseky = new ArrayList<Usek>();
+		
+		if(ziskajVsetkyZastavky().size() == 0)
+		{
+			throw new InaChybaException("Nenasli sa zastavky");
+		}
 		
 		int poslednyOdchodHodina = 0;
 		int poslednyOdchodMinuta = 0;
@@ -104,8 +149,18 @@ public class Spoj
 		{		
 			String cas = vsetkyZastavky.get(i).ziskajCasOdchodu();
 			
+			if(!cas.contains(":"))
+			{
+				throw new ZlyFormatElementuException("Cas neobsahuje \":\"");
+			}
+			
 			final int odchodHodina = Integer.parseInt(cas.split(":")[0]);
 			final int odchodMinuta = Integer.parseInt(cas.split(":")[1]);
+			
+			if(!datumOdchodu.contains("."))
+			{
+				throw new ZlyFormatElementuException("Datum neobsahuje \"\\.\"");
+			}
 			
 			final int odchodRok = Integer.parseInt(datumOdchodu.split("\\.")[2]);
 			final int odchodMesiac = Integer.parseInt(datumOdchodu.split("\\.")[1]);
@@ -124,6 +179,7 @@ public class Spoj
 			
 			datumOdchodu = odchodDatum.get(Calendar.DAY_OF_MONTH) + "." + odchodDatum.get(Calendar.MONTH) + "." + odchodDatum.get(Calendar.YEAR);
 			
+			// @todo Optimalizovat: pre osobaky nemusime thread vobec vytvarat
 			KontingentThread kt = new KontingentThread(this, vsetkyZastavky.get(i), vsetkyZastavky.get(i+1), "", datumOdchodu, cas);
 			kontingentThready.add(kt);
 			kt.start();				
@@ -135,44 +191,148 @@ public class Spoj
 				kt.join();
 			} catch (InterruptedException e) {
 				System.out.println("Vlakno " + kt.toString() + " - " + kt.toString() + " interrupted");
+				pridajChybnyUsek(new Usek(kt.ziskajOdkial(), kt.ziskajKam()), kt);				
 			}
 		}
 	}
 	
-	public boolean jeKontingentVycerpany() throws NemoznoZakupitListokException, IOException, ElementNotFoundException
+	public boolean jeKontingentVycerpany() throws NemoznoZakupitListokException, IOException, ChybajuciElementException
 	{
-		ziskajVyhladavanie().ziskajWebClienta().getOptions().setJavaScriptEnabled(true);
-		
-		if(ziskajFormularNakup() == null)
+		// Ak je tento spoj zlozeny len z jedneho osobaku, tak urcite ma volny kontingent
+		if(ziskajVlaky().size() == 1 && ziskajVlaky().get(0).ziskajTriedu().equals("Os"))
 		{
-			throw new NemoznoZakupitListokException();
+			return false;
 		}
 		
-		HtmlPage strankaNakup = ziskajFormularNakup().posli();
+		strankaSpoje.refresh();
+		
+		FormularNakup formularNakup = null;
+				
+		// Nacitaj formular informacie o trase
+		String nazovFormNakup = WebData.NAME_SPOJE_FORM_NAKUP_PREFIX + idSpoja + WebData.NAME_SPOJE_FORM_NAKUP_SUFFIX;
+		try
+		{
+			formularNakup = new FormularNakup(strankaSpoje.getFormByName(nazovFormNakup));
+		}
+		catch(ElementNotFoundException e)
+		{
+			throw new NemoznoZakupitListokException("Nebol najdeny formular Nakup (spoj zrejme nema tlacidlo Nakup)");
+		}		
+		
+		//Budeme potrebovat javascript pre zobrazenie "Bezplatne" checkboxu
+		ziskajVyhladavanie().ziskajWebClienta().getOptions().setJavaScriptEnabled(true);
+		
+		HtmlPage strankaNakup = formularNakup.posli();		
+		HtmlSelect rezervaciaElement = null;
+		HtmlOption listokOption = null;
 		
 		// Nechceme zakupit aj miestenku
-		HtmlSelect rezervaciaElement = (HtmlSelect) strankaNakup.getElementByName("j_idt92:j_idt94");
-		strankaNakup = rezervaciaElement.setSelectedAttribute(rezervaciaElement.getOptionByValue("1"), true);
+				
+		try
+		{
+			rezervaciaElement = (HtmlSelect) strankaNakup.getElementByName(WebData.NAME_NAKUP_SELECT_REZERVACIA);
+		}
+		catch(ElementNotFoundException e)
+		{
+			throw new ChybajuciElementException("Element rezervacia (" + WebData.NAME_NAKUP_SELECT_REZERVACIA + ") sa nenasiel");
+		}
+		
+		try
+		{
+			listokOption = rezervaciaElement.getOptionByValue(WebData.NAME_NAKUP_OPTION_LISTOK);
+		}
+		catch (ElementNotFoundException e)
+		{
+			throw new NemoznoZakupitListokException("V ponuke dostupnych moznosti zakupenia sa nenachadza option (" + WebData.NAME_NAKUP_OPTION_LISTOK + ") Listok");		
+		}
+		
+		strankaNakup = rezervaciaElement.setSelectedAttribute(listokOption, true);
 		
 		ziskajVyhladavanie().ziskajWebClienta().waitForBackgroundJavaScript(10000); 
 		
+		HtmlSelect typCestujucehoElement = null;
+		HtmlOption studentOption = null;
+		
 		// Nastavime studenta
-		HtmlSelect typCestujucehoElement = (HtmlSelect) strankaNakup.getElementById("ticketParam:j_idt112:1:j_idt114");
-		strankaNakup = typCestujucehoElement.setSelectedAttribute(typCestujucehoElement.getOptionByValue("2"), true);
+		try
+		{
+			typCestujucehoElement = (HtmlSelect) strankaNakup.getElementByName(WebData.NAME_NAKUP_SELECT_TYPCESTUJUCEHO);
+		}
+		catch(ElementNotFoundException e)
+		{
+			throw new ChybajuciElementException("Element typ cestujuceho (" + WebData.NAME_NAKUP_SELECT_TYPCESTUJUCEHO + ") sa nenasiel");
+		}
+		
+		try
+		{
+			studentOption = typCestujucehoElement.getOptionByValue(WebData.NAME_NAKUP_OPTION_STUDENT);
+		}
+		catch(ElementNotFoundException e)
+		{
+			throw new ChybajuciElementException("Element option student (" + WebData.NAME_NAKUP_OPTION_STUDENT + ") sa nenasiel");
+		}
+		
+		strankaNakup = typCestujucehoElement.setSelectedAttribute(studentOption, true);
 
 		ziskajVyhladavanie().ziskajWebClienta().waitForBackgroundJavaScript(10000);   
 		
 		// Nasledujuca stranka, po odoslani formulara
-        HtmlPage vysledok = strankaNakup.getFormByName("ticketParam").getInputByName("ticketParam:j_idt333").click();
+		
+		HtmlForm nakupForm = null;
+		
+		try
+		{
+			nakupForm = strankaNakup.getFormByName(WebData.NAME_NAKUP_FORM_NAKUP);
+		}
+		catch(ElementNotFoundException e)
+		{
+			throw new ChybajuciElementException("Element form nakup (" + WebData.NAME_NAKUP_OPTION_STUDENT + ") sa nenasiel");
+		}	
+		
+        HtmlPage vysledok = null;
+        
+        try
+        {
+        	vysledok = nakupForm.getInputByName(WebData.NAME_NAKUP_FORM_NAKUP_SUBMIT).click();
+        }
+        catch(ElementNotFoundException e)
+        {
+        	throw new ChybajuciElementException("Element potvrd nakup (" + WebData.NAME_NAKUP_FORM_NAKUP_SUBMIT + ") sa nenasiel");
+        }
+        
+        // Nepodarilo sa zakupit listok z nezisteneho dovodu (divoka kombinacia spojov rozneho typu a podobne)
+        if(!vysledok.asText().contains("Registraèné èíslo") && !vysledok.asText().contains("Vyèerpaný kontingent!"))
+        {
+        	throw new NemoznoZakupitListokException("Pri pokuse o zakupenie listka sme dostali neocakavany vysledok");
+        }
 		
         final boolean bVycerpany = vysledok.asText().contains("Vyèerpaný kontingent!");
         
-        if(vysledok.asText().contains("Registraèné èíslo"))
+        if(!bVycerpany)
         {
-        	// Slusne zrusime nakup
-			vysledok = vysledok.getFormByName("cancelShoppingCartForm").getInputByName("cancelShoppingCartForm:submit").click();
+        	// Slusne zrusime nakup (ak by sme to nespravili, zrejme by sme blokovali listok az po nejaky timeout)
+        	HtmlForm zrusNakupForm = null;
+        	
+        	try
+        	{
+        		zrusNakupForm = vysledok.getFormByName(WebData.NAME_POKLADNA_FORM_ZRUSNAKUP);
+        	}
+        	catch(ElementNotFoundException e)
+        	{
+        		throw new ChybajuciElementException("Element zrus nakup form (" + WebData.NAME_POKLADNA_FORM_ZRUSNAKUP + ") sa nenasiel");
+        	}
+        	
+        	try
+        	{
+        		zrusNakupForm.getInputByName(WebData.NAME_POKLADNA_FORM_ZRUSNAKUP_SUBMIT).click();
+        	}
+        	catch(ElementNotFoundException e)
+        	{
+        		throw new ChybajuciElementException("Element submit zrus nakup (" + WebData.NAME_POKLADNA_FORM_ZRUSNAKUP_SUBMIT + ") sa nenasiel");
+        	}
         }
         
+        // Uz javascript nepotrebujeme
         ziskajVyhladavanie().ziskajWebClienta().getOptions().setJavaScriptEnabled(false);
 		
 		return bVycerpany;
@@ -181,16 +341,6 @@ public class Spoj
 	public Vyhladavanie ziskajVyhladavanie()
 	{
 		return vyhladavanie;
-	}
-
-	public FormularInformaciaOTrase ziskajFormularInformaciaOTrase()
-	{
-		return formularInformaciaOTrase;
-	}
-
-	public FormularNakup ziskajFormularNakup()
-	{
-		return formularNakup;
 	}
 
 	public ArrayList<Vlak> ziskajVlaky()
@@ -214,7 +364,20 @@ public class Spoj
 		
 		for(Vlak v : vlaky)
 		{
-			vsetkyZastavky.addAll(v.ziskajZastavky());
+			ArrayList<Zastavka> dalsieZastavky = v.ziskajZastavky();
+			if(vsetkyZastavky.size() > 0)
+			{
+				Zastavka posledna = vsetkyZastavky.get(vsetkyZastavky.size() - 1);
+				Zastavka dalsia = dalsieZastavky.get(0);
+				
+				if(posledna.ziskajNazov().equals(dalsia.ziskajNazov()))
+				{
+					posledna.nastavCasOdchodu(dalsia.ziskajCasOdchodu());
+					dalsieZastavky.remove(0);
+				}
+			}
+			
+			vsetkyZastavky.addAll(dalsieZastavky);
 		}
 		
 		return vsetkyZastavky;
@@ -223,7 +386,13 @@ public class Spoj
 	public synchronized void pridajVolnyUsek(Usek usek, KontingentThread thread)
 	{
 		volneUseky.add(usek);
-		spojVolneUseky();
+		volneUseky = spojUseky(volneUseky);
+	}
+	
+	public synchronized void pridajChybnyUsek(Usek usek, KontingentThread thread)
+	{
+		chybneUseky.add(usek);
+		chybneUseky = spojUseky(chybneUseky);
 	}
 	
 	public ArrayList<Usek> ziskajVolneUseky()
@@ -231,26 +400,31 @@ public class Spoj
 		return volneUseky;
 	}
 	
-	public void spojVolneUseky()
+	public ArrayList<Usek> ziskajChybneUseky()
 	{
-		if(ziskajVolneUseky().size() == 0 || ziskajVolneUseky().size() == 1)
+		return volneUseky;
+	}
+	
+	public ArrayList<Usek> spojUseky(ArrayList<Usek> usekyNaSpojenie)
+	{
+		if(usekyNaSpojenie.size() == 0 || usekyNaSpojenie.size() == 1)
 		{
-            return;
+            return usekyNaSpojenie;
 		}
 		
 		ArrayList<Zastavka> vsetkyZastavky = ziskajVsetkyZastavky();
 
-        Collections.sort(volneUseky, new UsekComparator(vsetkyZastavky));
+        Collections.sort(usekyNaSpojenie, new UsekComparator(vsetkyZastavky));
 
-        Usek first = ziskajVolneUseky().get(0);
+        Usek first = usekyNaSpojenie.get(0);
         Zastavka start = first.zac;
         Zastavka end = first.kon;
 
         ArrayList<Usek> result = new ArrayList<Usek>();
 
-        for (int i = 1; i < ziskajVolneUseky().size(); i++)
+        for (int i = 1; i < usekyNaSpojenie.size(); i++)
         {
-            Usek current = ziskajVolneUseky().get(i);
+            Usek current = usekyNaSpojenie.get(i);
             if (vsetkyZastavky.indexOf(current.zac) <= vsetkyZastavky.indexOf(end))
             {
                 end = vsetkyZastavky.get(Math.max(vsetkyZastavky.indexOf(current.kon), vsetkyZastavky.indexOf(end)));
@@ -264,7 +438,7 @@ public class Spoj
         }
 
         result.add(new Usek(start, end));
-        volneUseky = result;
+        return result;
 	}
 }
 

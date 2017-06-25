@@ -7,7 +7,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 
 public class Test {
 
-    public static void main(final String[] args) throws FailingHttpStatusCodeException, MalformedURLException, IOException
+    public static void main2(final String[] args) throws FailingHttpStatusCodeException, MalformedURLException, IOException
     {
     	java.util.logging.Logger.getLogger("com.gargoylesoftware").setLevel(java.util.logging.Level.OFF);
     		

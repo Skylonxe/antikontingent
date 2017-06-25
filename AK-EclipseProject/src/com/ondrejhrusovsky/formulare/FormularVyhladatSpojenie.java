@@ -6,38 +6,39 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.ondrejhrusovsky.aplikacia.ChybajuciElementException;
+import com.ondrejhrusovsky.aplikacia.WebData;
 
 public class FormularVyhladatSpojenie extends Formular
 {
 	private HtmlTextInput odkialTextovePole;
 	private HtmlTextInput kamTextovePole;
 	private HtmlTextInput cezTextovePole;
-	private HtmlTextInput datumTextovePole;
-	private HtmlTextInput casTextovePole;
-	private HtmlSubmitInput vyhladatSpojenieTlacidlo;
+	protected HtmlTextInput datumTextovePole;
+	protected HtmlTextInput casTextovePole;
+	protected HtmlSubmitInput vyhladatSpojenieTlacidlo;
 	
-	public FormularVyhladatSpojenie(HtmlForm formular)
+	public FormularVyhladatSpojenie(HtmlForm formular) throws ChybajuciElementException
 	{
 		super(formular);
 	}
 	
 	@Override
-	public void nacitajElementy() throws ElementNotFoundException
+	public void nacitajElementy() throws ChybajuciElementException
 	{
 		try
 		{
-			odkialTextovePole = formular.getInputByName(formular.getNameAttribute() + ":fromInput");
-			kamTextovePole = formular.getInputByName(formular.getNameAttribute() + ":toInput");
-			cezTextovePole = formular.getInputByName(formular.getNameAttribute() + ":viaInput");		
+			odkialTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_ODKIAL);
+			kamTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_KAM);
+			cezTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_CEZ);	
+			datumTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_DATUM);
+			casTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_CAS);
+			vyhladatSpojenieTlacidlo = formular.getInputByName(WebData.NAME_VYHLADAVANIE_SUBMITINPUT_VYHLADAT);
 		}
 		catch (ElementNotFoundException e)
 		{
-			// Je to v poriadku, pri pokuse stranky o autocorrect (ziadost o vyber z dropdown) tieto textove polia neexistuju
+			throw new ChybajuciElementException("Formular FormularVyhladatSpojenie nenasiel jeden z elementov.");
 		}
-		
-		datumTextovePole = formular.getInputByName(formular.getNameAttribute() + ":date");
-		casTextovePole = formular.getInputByName(formular.getNameAttribute() + ":time");
-		vyhladatSpojenieTlacidlo = formular.getInputByName(formular.getNameAttribute() + ":submit");
 	}
 	
 	@Override

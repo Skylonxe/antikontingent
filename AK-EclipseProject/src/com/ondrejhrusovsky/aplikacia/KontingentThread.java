@@ -3,7 +3,6 @@ package com.ondrejhrusovsky.aplikacia;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
 public class KontingentThread extends Thread
@@ -38,9 +37,10 @@ public class KontingentThread extends Thread
 		{
 			vyhladavanie = new Vyhladavanie(odkial.ziskajNazov(), kam.ziskajNazov(), cez, datum, cas);
 		} 
-		catch (FailingHttpStatusCodeException | IOException e1) 
+		catch (FailingHttpStatusCodeException | IOException | NepodariloSaNajstSpojeException | ChybajuciElementException | ZlyFormatElementuException | InaChybaException e1) 
 		{
-			e1.printStackTrace();
+			System.out.println("Thread " + toString() + " sa neuspesne pokusil vyhladat spojenia: " + e1.getMessage());
+			pridajChybnyUsek();
 			return;
 		}
 		
@@ -60,11 +60,14 @@ public class KontingentThread extends Thread
 		{
 			for(Vlak v : s.ziskajVlaky())
 			{
-				if(nazvyVlakov.contains(v.ziskajMeno()))
+				for(String nazovVlaku : nazvyVlakov)
 				{
-					mojSpoj = s;
-					break;
-				}
+					if(nazovVlaku.contains(v.ziskajMeno()))
+					{
+						mojSpoj = s;
+						break;
+					}
+				}				
 			}
 			
 			if(mojSpoj != null)
@@ -72,42 +75,57 @@ public class KontingentThread extends Thread
 				break;
 			}
 		}
-			
-		boolean bVycerpany = true;
 		
-		System.out.println("Pytam sa na usek: " + toString());	
-		
-		try
+		if(mojSpoj == null)
 		{
-			bVycerpany = mojSpoj.jeKontingentVycerpany();
-		}
-		catch (ElementNotFoundException | IOException e)
-		{
-			System.out.println("Thread " + toString() + " spadol na chybe " + e.getMessage() + "!");
-			e.printStackTrace();
-		} 
-		catch (NemoznoZakupitListokException e)
-		{
-			System.out.println("Thread " + toString() + " uz nemoze zakupit listok!");
+			System.out.println("Thread " + toString() + " nedokazal najst svoj spoj!");
+			pridajChybnyUsek();
 			return;
-		}
+		}	
 		
-		synchronized(mojSpoj)
-		{
-			if(!bVycerpany)
+		try {
+			System.out.println("Pytam sa na usek: " + toString());	
+			boolean bJeVycerpany = mojSpoj.jeKontingentVycerpany();
+			
+			if(!bJeVycerpany)
 			{
-				System.out.println("Odpoved: Usek " + toString() + " je VOLNY!");
-				ziskajSpoj().pridajVolnyUsek(new Usek(odkial, kam), this);					
+				System.out.println(" ===== Volny usek: " + toString());	
+				pridajVolnyUsek();
 			}
 			else
 			{
-				System.out.println("Odpoved: Usek " + toString() + " je obsadeny");
+				System.out.println(" ===== Obsadeny usek: " + toString());	
 			}
-		}
+			
+		} catch (NemoznoZakupitListokException | IOException | ChybajuciElementException e) {
+			System.out.println("Thread " + toString() + " sa neuspesne pokusil overit kontingent na useku!");
+			pridajChybnyUsek();
+			return;
+		}		
+	}
+	
+	public void pridajVolnyUsek()
+	{
+		ziskajSpoj().pridajVolnyUsek(new Usek(odkial, kam), this);
+	}
+	
+	public void pridajChybnyUsek()
+	{
+		ziskajSpoj().pridajChybnyUsek(new Usek(odkial, kam), this);
 	}
 	
 	public Spoj ziskajSpoj()
 	{
 		return spoj;
+	}
+	
+	public Zastavka ziskajOdkial()
+	{
+		return odkial;
+	}
+	
+	public Zastavka ziskajKam()
+	{
+		return kam;
 	}
 }

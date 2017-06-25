@@ -19,6 +19,11 @@ public class Zastavka
 	{
 		return nazov;
 	}
+	
+	public void nastavCasOdchodu(String casOdchodu)
+	{
+		this.casOdchodu = casOdchodu;
+	}
 
 	public String ziskajNazov()
 	{
