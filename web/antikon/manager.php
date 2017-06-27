@@ -33,7 +33,7 @@ function populateJavascript()
 
 function generateRequestId()
 {
-	return bin2hex(mcrypt_create_iv(22, MCRYPT_DEV_URANDOM));
+	return mt_rand(1,100000);
 }
 
 ?>

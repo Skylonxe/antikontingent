@@ -20,7 +20,12 @@
 
 <script type="text/javascript">
 
-var socket =  io.connect('http://localhost:9092');
+var socket =  io.connect('158.195.210.170:9092', {
+  'reconnection': true,
+  'reconnectionDelay': 50,
+  'reconnectionAttempts': 30,
+  'transports': [ 'websocket' ]
+});
 var jsonObject = { requestId : requestId, from : from, to : to,  through : through, date : date, time : time };
 socket.emit('searchRequest', jsonObject);
 var searchResult = null;
@@ -75,6 +80,11 @@ function showContingentDetails(routeIdx)
 
  <script type="text/javascript">
 	showWaiter();
+	
+	socket.on('test', function(d) {
+		console.log("test ok");
+		console.log(d);
+	});
  
 	socket.on('searchSuccessful', function(searchResultData) {
 		searchResult = searchResultData;

@@ -2,6 +2,10 @@ package com.ondrejhrusovsky.server;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.corundumstudio.socketio.AckMode;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
@@ -17,13 +21,12 @@ public class SocketIOKomServer {
 	private static SocketIOServer server;
 	private static Configuration config;
 
-	private final static String hostname = "localhost";
+	private final static String hostname = "0.0.0.0";
     private final static int port = 9092;
       
     protected SocketIOKomServer()
     {
     	config = new Configuration();
-        config.setHostname(hostname);
         config.setPort(port);
     }
     
@@ -40,6 +43,9 @@ public class SocketIOKomServer {
     public void startServer()
     {
         server = new SocketIOServer(config);
+        Logger logger = LoggerFactory.getLogger(SocketIOKomServer.class);
+        
+        System.out.println("RUNNING");
   
         server.addEventListener("searchRequest", RequestRoutesObject.class, new DataListener<RequestRoutesObject>()
         {
@@ -48,7 +54,7 @@ public class SocketIOKomServer {
             {
             	System.out.println("searchRequest " + request.toString());
             	Vyhladavac v = Manazer.ziskajInstanciu().zacniVyhladavanie(request.requestId, request.from, request.to, request.through, request.date, request.time);            	
-        		
+            	
             	try
             	{
 					v.join();
@@ -62,6 +68,7 @@ public class SocketIOKomServer {
 	            	{
 	            		System.out.println("searchSuccessful");
 	            		client.sendEvent("searchSuccessful", v.ziskajVyhladavanie());
+	            		client.sendEvent("test", "TEST");
 	            		
 	            		for(Spoj s : v.ziskajVyhladavanie().spoje)
 	            		{
@@ -72,7 +79,9 @@ public class SocketIOKomServer {
 							}
 	            			
 	            			client.sendEvent("searchSuccessful", v.ziskajVyhladavanie());
-	            		}    		
+	            		}  
+	            		
+	            		client.sendEvent("searchSuccessful", v.ziskajVyhladavanie());
 	            	}
 					
 				}

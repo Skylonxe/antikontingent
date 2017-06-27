@@ -39,6 +39,7 @@
 	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-socketio-1.7.12.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-transport-4.1.5.Final.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-transport-native-epoll-4.1.5.Final.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/slf4j-api-1.7.21.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/slf4j-api-1.7.25.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/slf4j-simple-1.7.25.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
