@@ -6,8 +6,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import com.ondrejhrusovsky.aplikacia.ChybajuciElementException;
-import com.ondrejhrusovsky.aplikacia.WebData;
+import com.ondrejhrusovsky.exceptions.ChybajuciElementException;
+import com.ondrejhrusovsky.ikvcAPI.Config;
 
 public class FormularVyhladatSpojenie extends Formular
 {
@@ -28,12 +28,12 @@ public class FormularVyhladatSpojenie extends Formular
 	{
 		try
 		{
-			odkialTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_ODKIAL);
-			kamTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_KAM);
-			cezTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_CEZ);	
-			datumTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_DATUM);
-			casTextovePole = formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_CAS);
-			vyhladatSpojenieTlacidlo = formular.getInputByName(WebData.NAME_VYHLADAVANIE_SUBMITINPUT_VYHLADAT);
+			odkialTextovePole = formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_ODKIAL);
+			kamTextovePole = formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_KAM);
+			cezTextovePole = formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_CEZ);	
+			datumTextovePole = formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_DATUM);
+			casTextovePole = formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_CAS);
+			vyhladatSpojenieTlacidlo = formular.getInputByName(Config.NAME_VYHLADAVANIE_SUBMITINPUT_VYHLADAT);
 		}
 		catch (ElementNotFoundException e)
 		{

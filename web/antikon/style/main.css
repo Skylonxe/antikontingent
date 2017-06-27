@@ -1,0 +1,43 @@
+.backlink { position: fixed; top: 3px; right: 5px; font-size: 50px; z-index: 10000; color: #FF6600; }
+.backlink span { background-color: rgba(255,255,255,0.8); box-shadow: 0px 0px 3px 1px rgba(0,0,0,0.3); padding: 2px 5px;}
+
+.mainInfo { font-size: 20px; width: 95%; margin: 10px auto; }
+.mainBox{ width: 95%; margin: 10px auto; padding: 10px 2.5%; box-shadow: 0px 0px 3px 1px rgba(0,0,0,0.5);
+          background-color: #808080; }
+.mainBox .info { background-color: rgba(255,255,255,0.7); width: 98%; margin: 10px auto; padding: 10px 2.5%;
+          box-shadow: inset 0px 0px 3px 1px rgba(0,0,0,0.8);}
+
+.trainBox{width: 98%; margin: 10px auto; padding: 5px 2.5%; box-shadow: 0px 0px 3px 1px rgba(0,0,0,0.5);
+          position: relative; background-color: #FFEAD9; }
+
+.trainBox .fa-flag { position: absolute; right: 5px; top: 5px; font-size: 30px; }
+.fa-flag.c1 { color: green; }
+.fa-flag.c0 { color: orange; }
+.fa-flag.c-1 { color: red; }
+
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+
+.spinner {
+  position: relative;
+  width: 30px;
+  height: 30px;
+}
+ 
+.spinner:before {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  border-top-color: #333;
+  animation: spinner .6s linear infinite;
+}

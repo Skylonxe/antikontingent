@@ -15,7 +15,7 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.ondrejhrusovsky.aplikacia.WebData;
+import com.ondrejhrusovsky.ikvcAPI.Config;
 
 public class FormularVyhladatSpojenieTest {
 	
@@ -25,43 +25,43 @@ public class FormularVyhladatSpojenieTest {
 	public static void pripravTesty() throws FailingHttpStatusCodeException, MalformedURLException, IOException
 	{
 		WebClient webClient = PomocneFunkcie.vytvorKlienta();
-		HtmlPage strankaVyhladanieSpoja = webClient.getPage(WebData.LINK_VYHLADAVANIE);
-		formular = strankaVyhladanieSpoja.getFormByName(WebData.NAME_VYHLADAVANIE_FORM);
+		HtmlPage strankaVyhladanieSpoja = webClient.getPage(Config.LINK_VYHLADAVANIE);
+		formular = strankaVyhladanieSpoja.getFormByName(Config.NAME_VYHLADAVANIE_FORM);
 	}
 	
 	@Test
 	public void najdiTextInputOdkial() throws ElementNotFoundException
 	{
-		formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_ODKIAL);
+		formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_ODKIAL);
 	}
 	
 	@Test
 	public void najdiTextInputKam() throws ElementNotFoundException
 	{
-		formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_KAM);
+		formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_KAM);
 	}
 	
 	@Test
 	public void najdiTextInputCez() throws ElementNotFoundException
 	{
-		formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_CEZ);
+		formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_CEZ);
 	}
 	
 	@Test
 	public void najdiTextInputDatum() throws ElementNotFoundException
 	{
-		formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_DATUM);
+		formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_DATUM);
 	}
 	
 	@Test
 	public void najdiTextInputCas() throws ElementNotFoundException
 	{
-		formular.getInputByName(WebData.NAME_VYHLADAVANIE_TEXTINPUT_CAS);
+		formular.getInputByName(Config.NAME_VYHLADAVANIE_TEXTINPUT_CAS);
 	}
 
 	@Test
 	public void najdiSubmitInputVyhladat() throws ElementNotFoundException
 	{
-		formular.getInputByName(WebData.NAME_VYHLADAVANIE_SUBMITINPUT_VYHLADAT);
+		formular.getInputByName(Config.NAME_VYHLADAVANIE_SUBMITINPUT_VYHLADAT);
 	}
 }

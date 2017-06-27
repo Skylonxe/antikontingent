@@ -1,10 +1,9 @@
 package com.ondrejhrusovsky.formulare;
 import java.io.IOException;
 
-import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.ondrejhrusovsky.aplikacia.ChybajuciElementException;
+import com.ondrejhrusovsky.exceptions.ChybajuciElementException;
 
 public abstract class Formular
 {

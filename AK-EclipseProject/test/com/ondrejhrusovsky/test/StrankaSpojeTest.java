@@ -19,12 +19,13 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.ondrejhrusovsky.aplikacia.Spoj;
-import com.ondrejhrusovsky.aplikacia.WebData;
-import com.ondrejhrusovsky.aplikacia.ChybajuciElementException;
-import com.ondrejhrusovsky.aplikacia.NepodariloSaNajstSpojeException;
+import com.ondrejhrusovsky.exceptions.ChybajuciElementException;
+import com.ondrejhrusovsky.exceptions.NepodariloSaNajstSpojeException;
 import com.ondrejhrusovsky.formulare.FormularInformaciaOTrase;
 import com.ondrejhrusovsky.formulare.FormularVyhladatSpojenie;
+import com.ondrejhrusovsky.formulare.FormularVyhladatSpojenieAutocorrect;
+import com.ondrejhrusovsky.ikvcAPI.Config;
+import com.ondrejhrusovsky.ikvcAPI.Spoj;
 
 public class StrankaSpojeTest {
 	
@@ -48,9 +49,9 @@ public class StrankaSpojeTest {
 		WebClient webClient = new WebClient(BrowserVersion.CHROME);
 		webClient.getOptions().setJavaScriptEnabled(false);	
 		
-		HtmlPage strankaVyhladanieSpoja = webClient.getPage(WebData.LINK_VYHLADAVANIE);
+		HtmlPage strankaVyhladanieSpoja = webClient.getPage(Config.LINK_VYHLADAVANIE);
 		
-		formularVyhladatSpojenie = new FormularVyhladatSpojenie(strankaVyhladanieSpoja.getFormByName(WebData.NAME_VYHLADAVANIE_FORM));
+		formularVyhladatSpojenie = new FormularVyhladatSpojenie(strankaVyhladanieSpoja.getFormByName(Config.NAME_VYHLADAVANIE_FORM));
 		formularVyhladatSpojenie.nastavOdkial(odkial);
 		formularVyhladatSpojenie.nastavKam(kam);
 		formularVyhladatSpojenie.nastavCez(cez);
@@ -58,7 +59,7 @@ public class StrankaSpojeTest {
 		formularVyhladatSpojenie.nastavCas(cas);
 		
 		HtmlPage strankaVyhladanieSpoja2 = formularVyhladatSpojenie.posli();
-		FormularVyhladatSpojenie formularVyhladatSpojenie2 = new FormularVyhladatSpojenie(strankaVyhladanieSpoja2.getFormByName("connectionParam")); 						
+		FormularVyhladatSpojenie formularVyhladatSpojenie2 = new FormularVyhladatSpojenieAutocorrect(strankaVyhladanieSpoja2.getFormByName("connectionParam")); 						
 		strankaSpoje = formularVyhladatSpojenie2.posli();	
 	}
 	
@@ -74,7 +75,7 @@ public class StrankaSpojeTest {
 	@Test
 	public void najdiStartovnuACielovuStanicu()
 	{
-		DomElement zaciatokKoniecElem = (DomElement) strankaSpoje.getFirstByXPath(WebData.ELEM_SPOJE_ZACIATOKKONIEC);
+		DomElement zaciatokKoniecElem = (DomElement) strankaSpoje.getFirstByXPath(Config.ELEM_SPOJE_ZACIATOKKONIEC);
 		
 		String[] zaciatokKoniec = zaciatokKoniecElem.asText().split("/");
 		String vStanica = zaciatokKoniec[0].trim();
@@ -87,16 +88,16 @@ public class StrankaSpojeTest {
 	@Test
 	public void najdiSpoje()
 	{
-		List<Object> elementySpojov = strankaSpoje.getByXPath(WebData.ELEM_SPOJE_SPOJ);		
+		List<Object> elementySpojov = strankaSpoje.getByXPath(Config.ELEM_SPOJE_SPOJ);		
 		assertNotEquals(elementySpojov.size(), 0);
 	}
 	
 	@Test
 	public void najdiFormularInformacieOTrase()
 	{
-		List<Object> elementySpojov = strankaSpoje.getByXPath(WebData.ELEM_SPOJE_SPOJ);		
+		List<Object> elementySpojov = strankaSpoje.getByXPath(Config.ELEM_SPOJE_SPOJ);		
 		List<Spoj> spoje = new ArrayList<Spoj>();
 		
-		HtmlForm formular = strankaSpoje.getFormByName(WebData.NAME_SPOJE_FORM_INFO_PREFIX + 0 + WebData.NAME_SPOJE_FORM_INFO_SUFFIX);
+		HtmlForm formular = strankaSpoje.getFormByName(Config.NAME_SPOJE_FORM_INFO_PREFIX + 0 + Config.NAME_SPOJE_FORM_INFO_SUFFIX);
 	}
 }

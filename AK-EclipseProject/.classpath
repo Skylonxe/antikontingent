@@ -27,5 +27,18 @@
 	<classpathentry kind="lib" path="lib/xalan-2.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl-2.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/xml-apis-1.4.01.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/jackson-annotations-2.7.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/jackson-core-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/jackson-databind-2.7.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-buffer-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-codec-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-codec-http-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-common-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-handler-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-resolver-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-socketio-1.7.12.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-transport-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/netty-transport-native-epoll-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Ondrej/Documents/GitHub/antikontingent/AK-EclipseProject/lib/netty-socketio-1.7.12/slf4j-api-1.7.21.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -5,8 +5,8 @@ import com.gargoylesoftware.htmlunit.ElementNotFoundException;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.ondrejhrusovsky.aplikacia.ChybajuciElementException;
-import com.ondrejhrusovsky.aplikacia.WebData;
+import com.ondrejhrusovsky.exceptions.ChybajuciElementException;
+import com.ondrejhrusovsky.ikvcAPI.Config;
 
 public class FormularInformaciaOTrase extends Formular
 {
@@ -22,7 +22,7 @@ public class FormularInformaciaOTrase extends Formular
 	{
 		try
 		{		
-			informaciaOTraseTlacidlo = formular.getInputByName(formular.getNameAttribute() + WebData.NAME_SPOJE_SUBMITINPUT_INFO_SUFFIX);
+			informaciaOTraseTlacidlo = formular.getInputByName(formular.getNameAttribute() + Config.NAME_SPOJE_SUBMITINPUT_INFO_SUFFIX);
 		}
 		catch(ElementNotFoundException e)
 		{
