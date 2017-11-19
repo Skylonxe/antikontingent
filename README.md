@@ -22,3 +22,7 @@ Konzolova aplikacia:
 ![alt text](https://i.imgur.com/hm2C6rq.png)
 
 ![alt text](https://i.imgur.com/OkggCK9.png)
+
+Zdrojove subory konzolovej aplikacie zatial chybaju, ale spustitelny jar (resp. Spusti.bat) subor (tzn. v PC treba mat nainstalovanu Javu) sa nachadza tu:
+
+https://mega.nz/#!stsUCBLS!tuuTC87emNbSeSx-OLjAA8NqTMfVYKuEKYSFjblfF9Q
