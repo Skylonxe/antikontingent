@@ -20,7 +20,7 @@ public class Test {
             HtmlTextInput textField = form.getInputByName("connectionParam:fromInput");
             HtmlTextInput textField2 = form.getInputByName("connectionParam:toInput");
             textField.setValueAttribute("Bratislava hl.st.");
-            textField2.setValueAttribute("Koöice");
+            textField2.setValueAttribute("Ko≈°ice");
      
             page = button.click();
             form = page.getFormByName("connectionParam");       

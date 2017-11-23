@@ -335,13 +335,13 @@ public class Spoj
         }
         
         // Nepodarilo sa zakupit listok z nezisteneho dovodu (divoka kombinacia spojov rozneho typu a podobne)
-        if(!vysledok.asText().contains("Registraèné èíslo") && !vysledok.asText().contains("Vyèerpanı kontingent!"))
+        if(!vysledok.asText().contains("RegistraÄnÃ© ÄÃ­slo") && !vysledok.asText().contains("VyÄerpanÃ½ kontingent!"))
         {
         	chybaNacitaniaKontingentu = true;
         	throw new NemoznoZakupitListokException("Pri pokuse o zakupenie listka sme dostali neocakavany vysledok");
         }
 		
-        final boolean bVycerpany = vysledok.asText().contains("Vyèerpanı kontingent!");
+        final boolean bVycerpany = vysledok.asText().contains("VyÄerpanÃ½ kontingent!");
         
         if(!bVycerpany)
         {

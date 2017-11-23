@@ -127,7 +127,7 @@ public class Vyhladavanie
 			// Je to ok, formular tam nemusi byt, ak udaje boli spravne
 		}
 
-		if(!nasledujucaStranka.asText().contains("Nasledujúce"))
+		if(!nasledujucaStranka.asText().contains("NasledujÃºce"))
 		{
 			throw new NepodariloSaNajstSpojeException();
 		}

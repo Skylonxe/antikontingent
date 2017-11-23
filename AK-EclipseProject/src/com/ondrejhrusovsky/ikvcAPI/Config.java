@@ -4,6 +4,8 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 
 public class Config
 {
+	public static final String ikvcAPIVerzia = "0.7";
+	
 	public static final BrowserVersion VerziaPrehliadaca = BrowserVersion.CHROME;
 	public static final String LINK_VYHLADAVANIE = "https://ikvc.slovakrail.sk/mobile-sales-web/pages/connection/searchParam.xhtml";
 	

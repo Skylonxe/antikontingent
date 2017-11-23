@@ -88,18 +88,18 @@ public class KontingentThread extends Thread
 		}	
 		
 		try {
-			System.out.println("Pytam sa na usek: " + toString());	
+			System.out.println("--------->>> Odosielam poziadavku na usek: " + toString() + "...");	
 			mojSpoj.nacitajKontingent();
 			boolean bJeVycerpany = mojSpoj.kontingentVycerpany;
 			
 			if(!bJeVycerpany)
 			{
-				System.out.println(" ===== Volny usek: " + toString());	
+				//System.out.println(" ===== Volny usek: " + toString());	
 				pridajVolnyUsek();
 			}
 			else
 			{
-				System.out.println(" ===== Obsadeny usek: " + toString());	
+				//System.out.println(" ===== Obsadeny usek: " + toString());	
 			}
 			
 		} catch (NemoznoZakupitListokException | IOException | ChybajuciElementException e) {
