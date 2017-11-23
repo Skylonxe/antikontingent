@@ -9,7 +9,7 @@ date_default_timezone_set('Europe/Bratislava');
     <div id='error' onclick="error()"  style='display: none; position: fixed; box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.8);
       margin: 20px 10%; width: 80%; background-color: rgba(240,200,200,0.95); padding: 0px 2.5% 15px 2.5%; z-index: 50000;'>
       <h2>Chyba!</h2>
-      <p>Chod do pice...</p>
+      <p>...</p>
     </div>
 
     <div onclick="pushInfo()" id='forceInfo' style='display: none; position: fixed; box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.8);

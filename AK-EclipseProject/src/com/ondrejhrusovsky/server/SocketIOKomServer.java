@@ -28,6 +28,9 @@ public class SocketIOKomServer {
     {
     	config = new Configuration();
         config.setPort(port);
+        config.setPingTimeout(99999999);
+        config.setUpgradeTimeout(99999999);
+        config.setFirstDataTimeout(99999999);
     }
     
     public static SocketIOKomServer ziskajInstanciu()

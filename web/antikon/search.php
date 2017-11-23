@@ -20,7 +20,7 @@
 
 <script type="text/javascript">
 
-var socket =  io.connect('158.195.210.170:9092', {
+var socket =  io.connect('127.0.0.1:9092', {
   'reconnection': true,
   'reconnectionDelay': 50,
   'reconnectionAttempts': 30,
