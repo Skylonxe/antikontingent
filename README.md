@@ -29,7 +29,7 @@ Konzolova aplikacia:
 
 Spustitelne subory:
 
-Aplikacia vyzaduje Java Runtime 64bit. V oboch balikoch je prilozeny jednoduchy navod.
+Aplikacia vyzaduje Java Runtime 64bit. V oboch balikoch je prilozeny jednoduchy navod. Konzolova aplikacia je spolahlivejsia.
 
 Stiahnutie webovej aplikacie:
 
